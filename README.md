@@ -1,2 +1,2 @@
-# instagram_analyizer
+# Instagram Analyzer
 Analyze instagram social networks with visualizations.
