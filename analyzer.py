@@ -15,6 +15,9 @@ if __name__ == '__main__':
     # find edges and weights
     edges = find_edges_and_weights(all_followings)
 
+    # save edges to file
+    with open('edges.json', 'w') as f:
+        json.dump(edges, f)
+
     # draw edges
     draw_edges(edges)
-    plt.show()

@@ -1,4 +1,4 @@
 python-dotenv~=0.20.0
-instagrapi~=1.16.20
+instagrapi==1.16.21
 networkx~=2.8.4
 matplotlib~=3.5.2
