@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 """
 use loaded network and tools in relational_clustering.py
-to visualize the network
+save weighted edges to file
 """
 
 import json
@@ -19,5 +20,3 @@ if __name__ == '__main__':
     with open('edges.json', 'w') as f:
         json.dump(edges, f)
 
-    # draw edges
-    draw_edges(edges)
