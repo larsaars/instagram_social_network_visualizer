@@ -84,7 +84,20 @@ def find_edges_and_weights(data: dict):
     for i in range(len(all_points)):
         for j in range(i + 1, len(all_points)):
             if all_points[i] != all_points[j]:
-                relations.append(Relation(all_points[i], all_points[j]))
+                # create relation object
+                r = Relation(all_points[i], all_points[j])
+                # x follows y connection +1
+                # y follows x connection +1
+                # => 0 == no connection
+                # => 1 == weak connection
+                # => 2 == strong connection
+                if r.b in data and r.a in data[r.b]:
+                    r.connection += 1
+                if r.a in data and r.b in data[r.a]:
+                    r.connection += 1
+
+                if r.connection > 0:
+                    relations.append(r)
 
     # the final edges of the graph
     # look like this:
@@ -95,42 +108,31 @@ def find_edges_and_weights(data: dict):
 
     # first calculate distances between all points
     for r in relations:
-        # x follows y connection +1
-        # y follows x connection +1
-        # => 0 == no connection
-        # => 1 == weak connection
-        # => 2 == strong connection
-        if r.b in data and r.a in data[r.b]:
-            r.connection += 1
-        if r.a in data and r.b in data[r.a]:
-            r.connection += 1
+        # (x, y) == (y, x)
+        # loop through all points c
+        # if a follows c and b follows c
+        # => dist += 1
+        # meaning: a and b both follow c -> they are both in the same network
+        for c in all_points:
+            if r.a in data and c in data[r.a] and r.b in data and c in data[r.b]:
+                r.dist += 1
 
-        if r.connection > 0:
-            # (x, y) == (y, x)
-            # loop through all points c
-            # if a follows c and b follows c
-            # => dist += 1
-            # meaning: a and b both follow c -> they are both in the same network
-            for c in all_points:
-                if r.a in data and c in data[r.a] and r.b in data and c in data[r.b]:
-                    r.dist += 1
+        # they both follow the same persons:
+        # distance should be smaller
+        # => dist = 1 / dist
+        if r.dist == 0:
+            r.dist = 2
+        else:
+            r.dist = 1 / (r.dist ** 1.4)
 
-            # they both follow the same persons:
-            # distance should be smaller
-            # => dist = 1 / dist
-            if r.dist == 0:
-                r.dist = 2
-            else:
-                r.dist = 1 / (r.dist ** 1.4)
+        # strong connection means even less distance between points
+        r.dist *= 1 / (r.connection + 1)
 
-            # strong connection means even less distance between points
-            r.dist *= 1 / (r.connection + 1)
-
-            # add to edge list
-            # decrypt ids to names again
-            edge = (ids[r.a], ids[r.b], r.dist)
-            print(f'Added edge: {edge}')
-            edges.append(edge)
+        # add to edge list
+        # decrypt ids to names again
+        edge = (ids[r.a], ids[r.b], r.dist)
+        print(f'Added edge: {edge}')
+        edges.append(edge)
 
     # return final edges
     return edges
