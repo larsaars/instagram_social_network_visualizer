@@ -1,42 +1,20 @@
 """
-analyze instagram follower social bubbles
-"who follows whom"
+use loaded network and tools in relational_clustering.py
+to visualize the network
 """
 
-import os
-from dotenv import load_dotenv
-from instagrapi import Client
+import json
+from relational_clustering import draw_edges, find_edges_and_weights
+import matplotlib.pyplot as plt
 
-# load .env file
-load_dotenv()
+if __name__ == '__main__':
+    # load .json file
+    with open('followings.json', 'r') as f:
+        all_followings = json.load(f)
 
-# load env variables
-IG_USERNAME = os.getenv('IG_USERNAME')
-IG_PASSWORD = os.getenv('IG_PASSWORD')
-ANALYZE_DEPTH = int(os.getenv('ANALYZE_DEPTH'))
-MAX_FOLLOWERS = int(os.getenv('MAX_FOLLOWERS'))
+    # find edges and weights
+    edges = find_edges_and_weights(all_followings)
 
-# authenticate
-client = Client()
-client.login(IG_USERNAME, IG_PASSWORD)
-
-user_followings = []
-
-
-# find all followers till wished depth of analysis recursively
-def query_followings(user_id, depth):
-    if depth == 0:
-        return
-
-    # fetch following users
-    following = client.user_following(user_id=user_id, amount=MAX_FOLLOWERS, use_cache=True)
-
-    # recursively call query_followers for each following
-    for id in following:
-        pass
-
-        # query this users followings
-        # query_followings(id, depth - 1)
-
-
-query_followings(client.user_id, ANALYZE_DEPTH)
+    # draw edges
+    draw_edges(edges)
+    plt.show()

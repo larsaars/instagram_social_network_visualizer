@@ -2,6 +2,9 @@
 relational clustering
 """
 
+import matplotlib.pyplot as plt
+import networkx as nx
+
 
 class Relation(object):
     """
@@ -21,7 +24,7 @@ class Relation(object):
         self.a = a
         self.b = b
         # distance between a and b
-        self.dist = 0
+        self.dist = 1
         # type of connection (weak or strong or none)
         self.connection = 0
         # final coordinates of a and b
@@ -42,7 +45,7 @@ class Relation(object):
         return hash(str(self))
 
 
-def cluster(data: dict):
+def find_edges_and_weights(data: dict):
     """
     :param data: dict of following format:
         {
@@ -51,18 +54,22 @@ def cluster(data: dict):
             'C': ['A', 'B']
             ....
         }
-    :return: list of points
+    :return: list of edges and weights
     """
 
     # get combinations of all points
     # satisfies:
     # (a, b) == (b, a)
 
+    print('Finding all points...')
+
     # first throw all points into one list
     all_points = set(list(data.keys()))
     for points in data.values():
         for point in points:
             all_points.add(point)
+
+    print('Creating all relations...')
 
     # create all relations
     all_points = list(all_points)
@@ -72,6 +79,13 @@ def cluster(data: dict):
         for j in range(i + 1, len(all_points)):
             if all_points[i] != all_points[j]:
                 relations.append(Relation(all_points[i], all_points[j]))
+
+    # the final edges of the graph
+    # look like this:
+    # (name a, name b, weight)
+    edges = []
+
+    print('Calculating edges and distances...')
 
     # first calculate distances between all points
     for r in relations:
@@ -100,22 +114,31 @@ def cluster(data: dict):
         if r.dist == 0:
             r.dist = 2
         else:
-            r.dist = 1 / r.dist
+            r.dist = 1 / (r.dist ** 1.4)
 
         # strong connection means even less distance between points
         r.dist *= 1 / (r.connection + 1)
 
-    # now we have all points and all distances they should have from each other
-    # cluster them in a 2d image
-    # not all distances can be satisfied
-    # start with putting base point at (0, 0)
+        # add to edge list
+        if r.connection > 0:
+            edge = (r.a, r.b, r.dist)
+            print(f'Added edge: {edge}')
+            edges.append(edge)
+
+    # return final edges
+    return edges
 
 
+def draw_edges(edges: list):
+    print('Drawing graph...')
 
-    return relations
+    # create graph
+    G = nx.Graph()
+    G.add_weighted_edges_from(edges)
 
-
-# when plotting, strong connections should have another color than weak connections
+    # draw the graph (using networkx)
+    nx.draw(G, with_labels=True, edge_color='grey', node_size=4, node_color='blue', font_color='black', alpha=0.5,
+            width=1)
 
 
 if __name__ == '__main__':
@@ -123,7 +146,11 @@ if __name__ == '__main__':
     data = {
         'A': ['B', 'C', 'D'],
         'B': ['C', 'D'],
-        'C': ['A', 'B']
+        'C': ['A', 'B'],
+        'Epsilon': ['Faa', 'Gaa', 'A'],
     }
 
-    print(cluster(data))
+    edges = find_edges_and_weights(data)
+
+    print(edges)
+    draw_edges(edges)
