@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 """
 use loaded network and tools in relational_clustering.py
 save weighted edges to file

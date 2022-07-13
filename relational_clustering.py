@@ -4,45 +4,7 @@ relational clustering
 
 import matplotlib.pyplot as plt
 import networkx as nx
-
-
-class Relation(object):
-    """
-    Relation class
-
-    (a, b) == (b, a)
-
-    dist distance between x and y
-
-    connection 0 if x and y are not connected
-    connection 1 if x and y are connected
-    connection 2 if x and y and y and x are connected
-    """
-
-    def __init__(self, a, b):
-        # nominators
-        self.a = a
-        self.b = b
-        # distance between a and b
-        self.dist = 1
-        # type of connection (weak or strong or none)
-        self.connection = 0
-        # final coordinates of a and b
-        self.x = 0
-        self.y = 0
-
-    def __str__(self):
-        return f'({self.a}, {self.b})'
-
-    def __repr__(self):
-        return f'({self.a}, {self.b}, {self.dist}, {self.connection})'
-
-    def __eq__(self, other):
-        return (self.a == other.a and self.b == other.b) or \
-               (self.a == other.b and self.b == other.a)
-
-    def __hash__(self):
-        return hash(str(self))
+from tqdm import tqdm
 
 
 def find_edges_and_weights(data: dict):
@@ -74,65 +36,77 @@ def find_edges_and_weights(data: dict):
     # create all relations
     # create ids for names
     # comparing numbers is faster than comparing strings
-    ids = {k: v for k, v in enumerate(all_points)}
+    name_from_id = {k: v for k, v in enumerate(all_points)}
+    id_from_name = {v: k for k, v in name_from_id.items()}  # reverse dict
 
-    # all_points is a list of the keys
-    all_points = list(ids.keys())
-    relations = []
+    # replace everything in data dict with ids
+    id_data = dict()
+    for key in data:
+        id_data[id_from_name[key]] = [id_from_name[name] for name in data[key]]
 
-    print('Creating relations...')
-    for i in range(len(all_points)):
-        for j in range(i + 1, len(all_points)):
-            if all_points[i] != all_points[j]:
-                # create relation object
-                r = Relation(all_points[i], all_points[j])
-                # x follows y connection +1
-                # y follows x connection +1
-                # => 0 == no connection
-                # => 1 == weak connection
-                # => 2 == strong connection
-                if r.b in data and r.a in data[r.b]:
-                    r.connection += 1
-                if r.a in data and r.b in data[r.a]:
-                    r.connection += 1
+    print('Removing all single points (just one relation)...')
+    # remove points that are just themselves (no relation)
+    # they are overhead in the graph and are not interesting
+    # they also take up a lot of computing time
+    all_points = []
+    for point in name_from_id.keys():
+        # count occurrences
+        count = 0
+        for points in id_data.values():
+            if point in points:
+                count += 1
 
-                if r.connection > 0:
-                    relations.append(r)
+        # if there is only one occurrence, it is not a point
+        if count > 1:
+            all_points.append(point)
 
     # the final edges of the graph
     # look like this:
     # (name a, name b, weight)
     edges = []
 
-    print('Calculating edges and distances...')
+    print('Creating relations and calculating edges from these...')
+    for i in tqdm(range(len(all_points))):
+        for j in range(i + 1, len(all_points)):
+            if all_points[i] != all_points[j]:
+                # create relation object
+                a, b = all_points[i], all_points[j]
+                # x follows y connection +1
+                # y follows x connection +1
+                # => 0 == no connection
+                # => 1 == weak connection
+                # => 2 == strong connection
+                connection = 0
+                if b in id_data and a in id_data[b]:
+                    connection += 1
+                if a in id_data and b in id_data[a]:
+                    connection += 1
 
-    # first calculate distances between all points
-    for r in relations:
-        # (x, y) == (y, x)
-        # loop through all points c
-        # if a follows c and b follows c
-        # => dist += 1
-        # meaning: a and b both follow c -> they are both in the same network
-        for c in all_points:
-            if r.a in data and c in data[r.a] and r.b in data and c in data[r.b]:
-                r.dist += 1
+                if connection > 0:
+                    # (x, y) == (y, x)
+                    # loop through all points c
+                    # if a follows c and b follows c
+                    # => dist += 1
+                    # meaning: a and b both follow c -> they are both in the same network
+                    dist = 0
+                    for c in all_points:
+                        if a in id_data and c in id_data[a] and b in id_data and c in id_data[b]:
+                            dist += 1
 
-        # they both follow the same persons:
-        # distance should be smaller
-        # => dist = 1 / dist
-        if r.dist == 0:
-            r.dist = 2
-        else:
-            r.dist = 1 / (r.dist ** 1.4)
+                    # they both follow the same persons:
+                    # distance should be smaller
+                    # => dist = 1 / dist
+                    if dist == 0:
+                        dist = 2
+                    else:
+                        dist = 1 / (dist ** 1.4)
 
-        # strong connection means even less distance between points
-        r.dist *= 1 / (r.connection + 1)
+                    # strong connection means even less distance between points
+                    dist *= 1 / (connection + 1)
 
-        # add to edge list
-        # decrypt ids to names again
-        edge = (ids[r.a], ids[r.b], r.dist)
-        print(f'Added edge: {edge}')
-        edges.append(edge)
+                    # add to edge list
+                    # decrypt ids to names again
+                    edges.append((name_from_id[a], name_from_id[b], dist))
 
     # return final edges
     return edges
