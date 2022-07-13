@@ -69,12 +69,18 @@ def find_edges_and_weights(data: dict):
         for point in points:
             all_points.add(point)
 
-    print('Creating all relations...')
+    print(f'Creating ids (highest id: {len(all_points) - 1})')
 
     # create all relations
-    all_points = list(all_points)
+    # create ids for names
+    # comparing numbers is faster than comparing strings
+    ids = {k: v for k, v in enumerate(all_points)}
+
+    # all_points is a list of the keys
+    all_points = list(ids.keys())
     relations = []
 
+    print('Creating relations...')
     for i in range(len(all_points)):
         for j in range(i + 1, len(all_points)):
             if all_points[i] != all_points[j]:
@@ -99,29 +105,30 @@ def find_edges_and_weights(data: dict):
         if r.a in data and r.b in data[r.a]:
             r.connection += 1
 
-        # (x, y) == (y, x)
-        # loop through all points c
-        # if a follows c and b follows c
-        # => dist += 1
-        # meaning: a and b both follow c -> they are both in the same network
-        for c in all_points:
-            if r.a in data and c in data[r.a] and r.b in data and c in data[r.b]:
-                r.dist += 1
-
-        # they both follow the same persons:
-        # distance should be smaller
-        # => dist = 1 / dist
-        if r.dist == 0:
-            r.dist = 2
-        else:
-            r.dist = 1 / (r.dist ** 1.4)
-
-        # strong connection means even less distance between points
-        r.dist *= 1 / (r.connection + 1)
-
-        # add to edge list
         if r.connection > 0:
-            edge = (r.a, r.b, r.dist)
+            # (x, y) == (y, x)
+            # loop through all points c
+            # if a follows c and b follows c
+            # => dist += 1
+            # meaning: a and b both follow c -> they are both in the same network
+            for c in all_points:
+                if r.a in data and c in data[r.a] and r.b in data and c in data[r.b]:
+                    r.dist += 1
+
+            # they both follow the same persons:
+            # distance should be smaller
+            # => dist = 1 / dist
+            if r.dist == 0:
+                r.dist = 2
+            else:
+                r.dist = 1 / (r.dist ** 1.4)
+
+            # strong connection means even less distance between points
+            r.dist *= 1 / (r.connection + 1)
+
+            # add to edge list
+            # decrypt ids to names again
+            edge = (ids[r.a], ids[r.b], r.dist)
             print(f'Added edge: {edge}')
             edges.append(edge)
 

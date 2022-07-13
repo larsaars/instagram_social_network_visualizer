@@ -5,8 +5,7 @@ save weighted edges to file
 """
 
 import json
-from relational_clustering import draw_edges, find_edges_and_weights
-import matplotlib.pyplot as plt
+from relational_clustering import find_edges_and_weights
 
 if __name__ == '__main__':
     # load .json file
