@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 analyze instagram following social bubbles
 "who follows whom"
@@ -44,7 +45,7 @@ def main():
             print(current_username)
 
             # fetch following users
-            following = client.user_following(user_id=current_user_id, amount=MAX_FOLLOWERS, use_cache=True)
+            following = client.user_followings(user_id=current_user_id, amount=MAX_FOLLOWERS, use_cache=True)
 
             # add to dict of following users
             all_followings[current_username] = list()
