@@ -18,3 +18,5 @@ MAX_FOLLOWERS=1000
 - for labels copy in node table the id values to Label values
 - let OpenOrd run as algorithm and then Expand mutliple times
 - change text and node size at will etc for better understanding of the network
+
+![](Screenshot from 2022-07-14 14-16-53.png)
