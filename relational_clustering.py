@@ -2,8 +2,6 @@
 relational clustering
 """
 
-import matplotlib.pyplot as plt
-import networkx as nx
 from tqdm import tqdm
 
 
@@ -112,19 +110,6 @@ def find_edges_and_weights(data: dict):
     return edges
 
 
-def draw_edges(edges: list):
-    print('Drawing graph...')
-
-    # create graph
-    G = nx.Graph()
-    G.add_weighted_edges_from(edges)
-
-    # draw the graph (using networkx)
-    nx.draw(G, with_labels=True, edge_color='grey', node_size=4, node_color='blue', font_color='black', alpha=0.5,
-            width=1)
-    plt.show()
-
-
 if __name__ == '__main__':
     # create sample data and test algorithm
     data = {
@@ -137,4 +122,3 @@ if __name__ == '__main__':
     edges = find_edges_and_weights(data)
 
     print(edges)
-    draw_edges(edges)
