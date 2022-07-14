@@ -3,3 +3,5 @@ instagrapi==1.16.21
 networkx~=2.8.4
 matplotlib~=3.5.2
 tqdm~=4.64.0
+jaal~=0.1.2
+pandas~=1.4.3

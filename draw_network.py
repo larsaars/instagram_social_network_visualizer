@@ -3,13 +3,13 @@ draw the network saved in edges.json
 """
 
 import json
-
-from relational_clustering import draw_edges
+from pandas import DataFrame
 
 if __name__ == '__main__':
     # load .json file
     with open('edges.json', 'r') as f:
         edges = json.load(f)
 
-    # draw edges
-    draw_edges(edges)
+    edge_df = DataFrame(edges, columns=['from', 'to', 'weight'])
+
+    edge_df.to_csv('edges.csv')

@@ -127,5 +127,7 @@ dmypy.json
 
 # Pyre type checke
 
-# all json files
+# ignore all json, csv and gephi files
 *.json
+*.csv
+*.gephi
