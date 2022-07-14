@@ -1,4 +1,4 @@
-#!/usr/bin/env pypy3
+#!/usr/bin/env python3
 """
 use loaded network and tools in relational_clustering.py
 save weighted edges to file
@@ -6,6 +6,7 @@ save weighted edges to file
 
 from relational_clustering import find_edges_and_weights
 from pandas import DataFrame
+import json
 
 if __name__ == '__main__':
     # load .json file
