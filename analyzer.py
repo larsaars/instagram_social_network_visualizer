@@ -4,8 +4,8 @@ use loaded network and tools in relational_clustering.py
 save weighted edges to file
 """
 
-import json
 from relational_clustering import find_edges_and_weights
+from pandas import DataFrame
 
 if __name__ == '__main__':
     # load .json file
@@ -14,8 +14,13 @@ if __name__ == '__main__':
 
     # find edges and weights
     edges = find_edges_and_weights(all_followings)
+    # create pandas dataframe
+    edge_df = DataFrame(edges, columns=['Source', 'Target', 'Weight'])
+    # save csv
+    edge_df.to_csv('edges.csv')
 
-    # save edges to file
-    with open('edges.json', 'w') as f:
-        json.dump(edges, f)
+    # can be imported in a software like Gephi
+    # Gephi tutorial: https://www.youtube.com/watch?v=HJ4Hcq3YX4k
+    # for labels copy in node table the id values to Label values
+    # let OpenOrd run as algorithm and then Expand mutliple times
 
