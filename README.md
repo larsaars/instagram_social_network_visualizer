@@ -4,7 +4,7 @@ Analyze instagram social networks with visualizations.
 ## How to use
 
 - Install packages: `pip install -r requirements.txt`
-- In your .env file put:
+- In your `.envfile put:
 ```
 IG_USERNAME=...
 IG_PASSWORD=...
