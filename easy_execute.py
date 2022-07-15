@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 execute all scripts at once
 """
