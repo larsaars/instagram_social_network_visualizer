@@ -3,10 +3,15 @@ relational clustering
 """
 
 from tqdm import tqdm
+import pandas as pd
 
 
-def find_edges_and_weights(data: dict):
+def find_nodes_and_edges(data: dict, min_num_of_relations=2, edges_path='./results/edges.csv',
+                         nodes_path='./results/nodes.csv'):
     """
+    :param edges_path: path to edges file
+    :param nodes_path: path to nodes file
+    :param min_num_of_relations: minimum number of relations between data points to be considered as interconnected
     :param data: dict of following format:
         {
             'A': ['B', 'C', 'D'],
@@ -14,61 +19,56 @@ def find_edges_and_weights(data: dict):
             'C': ['A', 'B']
             ....
         }
-    :return: list of edges and weights
     """
 
-    # get combinations of all points
-    # satisfies:
-    # (a, b) == (b, a)
-
-    print('Finding all points...')
+    print('Finding all nodes...')
 
     # first throw all points into one list
-    all_points = set(list(data.keys()))
+    all_nodes = set(list(data.keys()))
     for points in data.values():
         for point in points:
-            all_points.add(point)
+            all_nodes.add(point)
 
-    print(f'Creating ids (highest id: {len(all_points) - 1})')
+    print(f'Creating ids for nodes (highest id: {len(all_nodes) - 1})')
 
     # create all relations
     # create ids for names
     # comparing numbers is faster than comparing strings
-    name_from_id = {k: v for k, v in enumerate(all_points)}
-    id_from_name = {v: k for k, v in name_from_id.items()}  # reverse dict
+    id_from_name = {k: v for v, k in enumerate(all_nodes)}
+    name_from_id = {v: k for k, v in id_from_name.items()}  # reverse dict
 
     # replace everything in data dict with ids
     id_data = dict()
     for key in data:
         id_data[id_from_name[key]] = [id_from_name[name] for name in data[key]]
 
-    print('Removing all single points (just one relation)...')
+    print('Removing all single nodes not fulfilling constraints (min num of relations)...')
     # remove points that are just themselves (no relation)
     # they are overhead in the graph and are not interesting
     # they also take up a lot of computing time
-    all_points = []
-    for point in name_from_id.keys():
+    all_nodes = []
+    for node in id_from_name.values():
         # count occurrences
         count = 0
-        for points in id_data.values():
-            if point in points:
+        for nodes in id_data.values():
+            if node in nodes:
                 count += 1
 
         # if there is only one occurrence, it is not a point
-        if count > 1:
-            all_points.append(point)
+        if count >= min_num_of_relations:
+            all_nodes.append(node)
 
     # the final edges of the graph
     # look like this:
     # (name a, name b, weight)
     edges = []
 
-    print('Creating relations and calculating edges from these...')
-    for i in tqdm(range(len(all_points))):
-        for j in range(i + 1, len(all_points)):
-            if all_points[i] != all_points[j]:
+    print('Calculating edges and relations...')
+    for i in tqdm(range(len(all_nodes))):
+        for j in range(i + 1, len(all_nodes)):
+            if all_nodes[i] != all_nodes[j]:
                 # create relation object
-                a, b = all_points[i], all_points[j]
+                a, b = all_nodes[i], all_nodes[j]
                 # x follows y connection +1
                 # y follows x connection +1
                 # => 0 == no connection
@@ -81,33 +81,19 @@ def find_edges_and_weights(data: dict):
                     connection += 1
 
                 if connection > 0:
-                    # (x, y) == (y, x)
-                    # loop through all points c
-                    # if a follows c and b follows c
-                    # => dist += 1
-                    # meaning: a and b both follow c -> they are both in the same network
-                    dist = 0
-                    for c in all_points:
-                        if a in id_data and c in id_data[a] and b in id_data and c in id_data[b]:
-                            dist += 1
+                    # add to edge list (as ids)
+                    edges.append((a, b, connection))
 
-                    # they both follow the same persons:
-                    # distance should be smaller
-                    # => dist = 1 / dist
-                    if dist == 0:
-                        dist = 2
-                    else:
-                        dist = 1 / (dist ** 1.4)
+    # save edges and names (nodes) to file
+    print('Saving edges and nodes to file...')
 
-                    # strong connection means even less distance between points
-                    dist *= 1 / (connection + 1)
+    # create pandas dataframes and save them
+    pd.DataFrame(edges, columns=['Source', 'Target', 'Weight']) \
+        .to_csv(edges_path, index=False)
+    pd.DataFrame([(node_id, name_from_id[node_id]) for node_id in all_nodes], columns=['Id', 'Label']) \
+        .to_csv(nodes_path, index=False)
 
-                    # add to edge list
-                    # decrypt ids to names again
-                    edges.append((name_from_id[a], name_from_id[b], dist))
-
-    # return final edges
-    return edges
+    print('Done! Can be imported in Gephi.')
 
 
 if __name__ == '__main__':
@@ -119,6 +105,4 @@ if __name__ == '__main__':
         'Epsilon': ['Faa', 'Gaa', 'A'],
     }
 
-    edges = find_edges_and_weights(data)
-
-    print(edges)
+    find_nodes_and_edges(data)
