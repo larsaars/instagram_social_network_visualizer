@@ -1,5 +1,6 @@
-# Instagram Analyzer
-Analyze instagram social networks with visualizations.
+# Instagram Social Network Visualizer
+
+Analyze instagram social networks with visualizations using the followers, followers of followers etc. (all in one tool).
 
 ## How does it work?
 
@@ -29,11 +30,11 @@ MIN_NUM_OF_RELATIONS=3
 PATH_TO_NODES_FILE=./results/nodes.csv
 PATH_TO_EDGES_FILE=./results/edges.csv
 ```
+- run the `analyze.py` script
 
 - `edges.csv` and `nodes.csv` can be imported in a software like [Gephi](https://gephi.org)
 - [Gephi tutorial](https://www.youtube.com/watch?v=HJ4Hcq3YX4k)
-- for labels copy in node table the id values to Label values
 - let OpenOrd run as algorithm and then Expand mutliple times
-- change text and node size at will etc for better understanding of the network
+- change text and node size at will etc. for better understanding of the network
 
 ![](imgs/gephi.png)
