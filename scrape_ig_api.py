@@ -46,11 +46,12 @@ def query_ig_api(usernames_to_be_scraped: set, ig_username, ig_password, max_fol
                 query_followings(user_id, this_username, depth - 1)
 
     # start query_followings from base user
-    try:
-        for username in usernames_to_be_scraped:
+    for username in usernames_to_be_scraped:
+        try:
             query_followings(username, username, analyze_depth)
-    except Exception as e:
-        print(e)
+        except Exception as e:
+            print(e)
+            print('Failed to query followers of user: ' + username)
 
     # save to file
     with open('followers.json', 'w') as f:
