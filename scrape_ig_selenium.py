@@ -113,10 +113,10 @@ def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_d
     # start scraping according to depth
     followers_for_depth_3plus = set()
     if analyze_depth >= 1:
-        followers_for_depth_3plus = scrape_followers(ig_username)
+        my_followers = scrape_followers(ig_username)
 
         if analyze_depth >= 2:
-            for follower in followers_for_depth_3plus:
+            for follower in my_followers:
                 followers_for_depth_3plus.update(scrape_followers(follower))
 
     # exit selenium
