@@ -15,6 +15,8 @@ def query_ig_api(usernames_to_be_scraped: set, ig_username, ig_password, max_fol
     with open('followers.json', 'r') as f:
         all_followers = json.load(f)
 
+    all_followers['version'] = 2
+
     # authenticate
     client = Client()
     client.login(ig_username, ig_password)

@@ -37,6 +37,13 @@ PATH_TO_EDGES_FILE = os.getenv('PATH_TO_EDGES_FILE')
 PATH_TO_NODES_FILE = os.getenv('PATH_TO_NODES_FILE')
 
 
+def read_followers_from_json():
+    with open('followers.json', 'r') as f:
+        all_followers = json.load(f)
+
+    return all_followers
+
+
 def main():
     # in between always save the results ('followers.json')
 
@@ -48,18 +55,30 @@ def main():
     #     ...
     # }
 
+    # read version of followers from json file
+    version = read_followers_from_json()['version'] or 0
+
     # scrape with selenium
-    usernames_to_scrape = scrape_with_selenium(IG_SELENIUM_USERNAME, IG_SELENIUM_PASSWORD, MAX_SCROLLING_SELENIUM,
-                                               ANALYZE_DEPTH)
+    if version == 0:
+        scrape_with_selenium(IG_SELENIUM_USERNAME, IG_SELENIUM_PASSWORD, MAX_SCROLLING_SELENIUM, ANALYZE_DEPTH)
+        version = 1
 
     # continue to scrape with api for depth 3+
-    query_ig_api(usernames_to_scrape, IG_API_USERNAME, IG_API_PASSWORD, MAX_FOLLOWERS_API, ANALYZE_DEPTH)
+    if version == 1:
+        with open('usernames_to_scrape.json', 'r') as f:
+            usernames_to_scrape = json.load(f)
+
+        query_ig_api(usernames_to_scrape, IG_API_USERNAME, IG_API_PASSWORD, MAX_FOLLOWERS_API, ANALYZE_DEPTH)
+        version = 2
 
     # analyze relations via relational clustering
-    with open('followers.json', 'r') as f:
-        all_followers = json.load(f)
+    if version == 2:
+        with open('followers.json', 'r') as f:
+            all_followers = json.load(f)
 
-    find_nodes_and_edges(all_followers, MIN_NUM_OF_RELATIONS, PATH_TO_EDGES_FILE, PATH_TO_NODES_FILE)
+        del all_followers['version']  # remove version key
+
+        find_nodes_and_edges(all_followers, MIN_NUM_OF_RELATIONS, PATH_TO_EDGES_FILE, PATH_TO_NODES_FILE)
 
 
 if __name__ == '__main__':

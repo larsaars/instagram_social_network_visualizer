@@ -11,9 +11,11 @@ from random import uniform
 TIMEOUT = 15
 
 
-def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_depth) -> set:
+def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_depth):
     # dict with all followers
-    all_followers = dict()
+    all_followers = {
+        'version': 1,
+    }
 
     # authenticate
     options = webdriver.ChromeOptions()
@@ -117,14 +119,15 @@ def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_d
             for follower in followers_for_depth_3plus:
                 followers_for_depth_3plus.update(scrape_followers(follower))
 
-    # save json file
-    with open('followers.json', 'w') as f:
-        json.dump(all_followers, f)
-
     # exit selenium
     bot.quit()
 
-    return followers_for_depth_3plus
+    # save json files
+    with open('followers.json', 'w') as f:
+        json.dump(all_followers, f)
+
+    with open('usernames_to_scrape.json', 'w') as f:
+        json.dump(list(followers_for_depth_3plus), f)
 
 
 if __name__ == '__main__':
