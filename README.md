@@ -4,7 +4,7 @@ Analyze instagram social networks with visualizations using the followers, follo
 
 ## !WARNING!
 
-The Instagram bot detection is pretty good. Use this on your own risk. Your account can get suspended, but it is rather easy to object as well.
+The Instagram bot detection is pretty good. Use this on your own risk. Your account can get suspended, but it is rather easy to raise an objection as well.
 
 ## How does it work?
 
