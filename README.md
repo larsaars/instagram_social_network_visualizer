@@ -2,6 +2,10 @@
 
 Analyze instagram social networks with visualizations using the followers, followers of followers etc. (all in one tool).
 
+## !WARNING!
+
+The Instagram bot detection is pretty good. Use this on your own risk. Your account can get suspended, but it is rather easy to object as well.
+
 ## How does it work?
 
 - The program first scrapes using your personal Instagram account using [selenium](https://www.selenium.dev/) your instagram followers and the people they follow (depth 1 and 2).
