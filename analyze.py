@@ -56,7 +56,7 @@ def main():
     # }
 
     # read version of followers from json file
-    version = read_followers_from_json()['version'] or 0
+    version = read_followers_from_json().get('version', 0)
 
     # scrape with selenium
     if version == 0:
