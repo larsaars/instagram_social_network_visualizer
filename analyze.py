@@ -24,8 +24,8 @@ IG_SELENIUM_PASSWORD = os.getenv('IG_SELENIUM_PASSWORD')
 IG_API_PASSWORD = os.getenv('IG_API_PASSWORD')
 IG_API_USERNAME = os.getenv('IG_API_USERNAME')
 
-MAX_FOLLOWERS_API = os.getenv('MAX_FOLLOWERS_API')
-MAX_FOLLOWERS_SELENIUM = os.getenv('MAX_FOLLOWERS_SELENIUM')
+MAX_FOLLOWERS_API = int(os.getenv('MAX_FOLLOWERS_API'))
+MAX_SCROLLING_SELENIUM = int(os.getenv('MAX_SCROLLING_SELENIUM'))
 
 # 1 - my followers
 # 2 - followers of my followers
@@ -49,7 +49,7 @@ def main():
     # }
 
     # scrape with selenium
-    usernames_to_scrape = scrape_with_selenium(IG_SELENIUM_USERNAME, IG_SELENIUM_PASSWORD, MAX_FOLLOWERS_SELENIUM,
+    usernames_to_scrape = scrape_with_selenium(IG_SELENIUM_USERNAME, IG_SELENIUM_PASSWORD, MAX_SCROLLING_SELENIUM,
                                                ANALYZE_DEPTH)
 
     # continue to scrape with api for depth 3+
