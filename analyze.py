@@ -39,7 +39,7 @@ PATH_TO_NODES_FILE = os.getenv('PATH_TO_NODES_FILE')
 
 def read_followers_from_json():
     if not os.path.exists('followers.json'):
-        return None
+        return dict()
 
     with open('followers.json', 'r') as f:
         all_followers = json.load(f)
