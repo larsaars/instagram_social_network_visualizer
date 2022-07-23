@@ -1,4 +1,5 @@
-# Instagram Analyzer
+# Instagram Social Network Visualizer
+
 Analyze instagram social networks with visualizations.
 
 ## How does it work?
