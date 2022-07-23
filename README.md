@@ -1,6 +1,6 @@
 # Instagram Social Network Visualizer
 
-Analyze instagram social networks with visualizations.
+Analyze instagram social networks with visualizations (all in one tool).
 
 ## How does it work?
 
