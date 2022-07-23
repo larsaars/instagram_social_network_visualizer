@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from random import uniform
+from tqdm import tqdm
 
 TIMEOUT = 15
 
@@ -86,7 +87,7 @@ def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_d
                 'arguments[0].scrollTop = arguments[0].scrollTop + arguments[0].offsetHeight * 4;',
                 dialog_body)
 
-            time.sleep(uniform(1, 2))
+            time.sleep(uniform(2.5, 3))
             scroll += 1
 
             # break if scroll is at the bottom (scroll top does not change after scrolling)
@@ -105,7 +106,8 @@ def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_d
             users.add(li.find_element(By.TAG_NAME, 'a').get_attribute('href').split('/')[3])
 
         # add to dict of followers
-        all_followers[username] = list(users)
+        if len(users) > 0:
+            all_followers[username] = list(users)
 
         # return followers
         return users
@@ -116,7 +118,7 @@ def scrape_with_selenium(ig_username, ig_password, load_max_followers, analyze_d
         my_followers = scrape_followers(ig_username)
 
         if analyze_depth >= 2:
-            for follower in my_followers:
+            for follower in tqdm(my_followers):
                 followers_for_depth_3plus.update(scrape_followers(follower))
 
     # exit selenium

@@ -1,5 +1,6 @@
 from instagrapi import Client
 import json
+from tqdm import tqdm
 
 
 def query_ig_api(usernames_to_be_scraped: set, ig_username, ig_password, max_followers, analyze_depth):
@@ -46,7 +47,7 @@ def query_ig_api(usernames_to_be_scraped: set, ig_username, ig_password, max_fol
                 query_followings(user_id, this_username, depth - 1)
 
     # start query_followings from base user
-    for username in usernames_to_be_scraped:
+    for username in tqdm(usernames_to_be_scraped):
         try:
             query_followings(username, username, analyze_depth)
         except Exception as e:
