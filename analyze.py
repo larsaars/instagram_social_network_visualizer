@@ -38,6 +38,9 @@ PATH_TO_NODES_FILE = os.getenv('PATH_TO_NODES_FILE')
 
 
 def read_followers_from_json():
+    if not os.path.exists('followers.json'):
+        return None
+
     with open('followers.json', 'r') as f:
         all_followers = json.load(f)
 
@@ -73,8 +76,7 @@ def main():
 
     # analyze relations via relational clustering
     if version == 2:
-        with open('followers.json', 'r') as f:
-            all_followers = json.load(f)
+        all_followers = read_followers_from_json()
 
         del all_followers['version']  # remove version key
 
